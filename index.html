@@ -1,16 +1,17 @@
-name: Python CI
+name: Python CI and Deploy
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    branches: [main]
+
+permissions:
+  contents: write
+  pages: write
 
 jobs:
-  test:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -26,10 +27,11 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Tests
-        run: pytest
+        run: |
+          export PYTHONPATH="${{ github.workspace }}"
+          pytest
 
-
-        - name: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
         if: success()  # Only deploy if tests pass
         uses: peaceiris/actions-gh-pages@v4
         with:
