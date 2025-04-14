@@ -1,39 +1,88 @@
-name: Python CI and Deploy
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Python Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .calculator {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 300px;
+      width: 100%;
+    }
+    input, select, button {
+      width: 100%;
+      margin-bottom: 1rem;
+      padding: 10px;
+      font-size: 1rem;
+    }
+    #result {
+      font-weight: bold;
+      text-align: center;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
 
-on:
-  push:
-    branches: [main]
+  <div class="calculator">
+    <h2>Python Calculator</h2>
+    <input type="number" id="num1" placeholder="Enter first number">
+    <input type="number" id="num2" placeholder="Enter second number">
+    <select id="operation">
+      <option value="add">Addition (+)</option>
+      <option value="subtract">Subtraction (-)</option>
+      <option value="multiply">Multiplication (×)</option>
+      <option value="divide">Division (÷)</option>
+    </select>
+    <button onclick="calculate()">Calculate</button>
+    <div id="result"></div>
+  </div>
 
-permissions:
-  contents: write
-  pages: write
+  <script>
+    function calculate() {
+      const a = parseFloat(document.getElementById('num1').value);
+      const b = parseFloat(document.getElementById('num2').value);
+      const op = document.getElementById('operation').value;
+      let result;
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+      if (isNaN(a) || isNaN(b)) {
+        result = "Please enter valid numbers.";
+      } else {
+        switch (op) {
+          case 'add':
+            result = `${a} + ${b} = ${a + b}`;
+            break;
+          case 'subtract':
+            result = `${a} - ${b} = ${a - b}`;
+            break;
+          case 'multiply':
+            result = `${a} × ${b} = ${a * b}`;
+            break;
+          case 'divide':
+            if (b === 0) {
+              result = "Error: Cannot divide by zero.";
+            } else {
+              result = `${a} ÷ ${b} = ${a / b}`;
+            }
+            break;
+        }
+      }
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      document.getElementById('result').innerText = result;
+    }
+  </script>
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Run Tests
-        run: |
-          export PYTHONPATH="${{ github.workspace }}"
-          pytest
-
-      - name: Deploy to GitHub Pages
-        if: success()  # Only deploy if tests pass
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .  # Root of repo where index.html lives
+</body>
+</html>
