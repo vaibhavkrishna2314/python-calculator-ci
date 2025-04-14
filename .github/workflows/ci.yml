@@ -1,4 +1,4 @@
-name: Python CI
+name: Python CI and Deploy
 
 on:
   push:
@@ -9,8 +9,9 @@ on:
       - main
 
 jobs:
-  test:
+  build-test-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -28,10 +29,9 @@ jobs:
       - name: Run Tests
         run: pytest
 
-
-        - name: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
         if: success()  # Only deploy if tests pass
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .  # Root of repo where index.html lives
+          publish_dir: ./docs   # Folder containing index.html for GitHub Pages
